@@ -1,0 +1,18 @@
+# how to create cluster in jenkins by using terraform ?
+steps :
+1)create ec2 with c7i then download aws-cli and then aws configure,terraform,jenkins
+2)then go to jenkins login after that go to settings and then plugin > avaliable plugin > aws authentiketer download it > again go to settings > 
+credintial > aws key then give key
+3) then go togithub > repo that wants to webhook > add webhook > give http://<ip>:8080/github-webhook/ then add 
+4) create job for pipeline > github hook trigger select > in script copy Declarative Pipeline search it on google
+5) click pipeline syntax at the end of script > select git then give info and create then copy in script > go again to pipeline syntax select "with credentionals" 
+give info copy it and at then same in time there is filing block give in it > go to pipeline syntax again select sh shell give terraform commands for 
+init,validate,approve then copy them in script > then again go to pipeline syntax sh shell then echo output for compliting .
+6) save it and then build .
+
+# how to host student erp on jenkins ?
+steps :
+1) go to jenkins create job > select github hook trigger > then copy script from declarative pipeline search from google > then syntax pipeline select git 
+fill needed info then genrate and copy it to syntax > then again syntax pipeline first give commands for directory that we want to use here we use backend go to backend "mvn clean package -Dmaven.test.skip=true" copy this to script > again
+go to syntax pipeline and do echo for output after deployment 
+2) then save it and build it .
