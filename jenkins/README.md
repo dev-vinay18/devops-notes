@@ -128,3 +128,114 @@ pipeline {
 - Jenkins → CI/CD automation
 - SonarQube → Code quality & security analysis
 - Integration ensures code passes quality checks before deployment.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------
+# ⚙️ Jenkins Pipeline Projects
+
+Two Jenkins pipeline setups documented step-by-step:
+1. 🏗️ Create a cluster using **Terraform**
+2. 🎓 Host **Student ERP** application
+
+---
+
+## 🏗️ How to Create a Cluster in Jenkins Using Terraform
+
+### Step 1 — Prepare the EC2 instance
+- Launch an **EC2 instance** (type: `c7i`)
+- Install the following tools on it:
+  - ✅ AWS CLI
+  - ✅ Terraform
+  - ✅ Jenkins
+- Run `aws configure` to connect AWS CLI with your AWS account
+
+### Step 2 — Configure Jenkins for AWS access
+- Log in to **Jenkins**
+- Go to **Manage Jenkins → Plugins → Available Plugins**
+- Search for **AWS Credentials** plugin → Install it
+- Go to **Manage Jenkins → Credentials**
+- Add a new credential → Type: **AWS Access Key** → enter your **Access Key ID** and **Secret Access Key**
+
+### Step 3 — Connect GitHub repo with Webhook
+- Go to your **GitHub repository → Settings → Webhooks → Add webhook**
+- Payload URL:
+  ```
+  http://<jenkins-server-ip>:8080/github-webhook/
+  ```
+- Click **Add webhook** ✅
+
+### Step 4 — Create the Jenkins Pipeline Job
+- **New Item → Pipeline**
+- Under **Build Triggers**, enable ✅ **GitHub hook trigger for GITScm polling**
+- In the **Pipeline script** box, search Google for **"Jenkins Declarative Pipeline"** and paste the base template as a starting point
+
+### Step 5 — Build the script using Pipeline Syntax generator
+Click **Pipeline Syntax** (at the bottom of the job config page), and generate each block below one at a time — copy each result into your script:
+
+| Order | Select in Pipeline Syntax | Purpose |
+|-------|---------------------------|---------|
+| 1 | `git` | Clone the repository — fill in repo URL + branch |
+| 2 | `withCredentials` | Securely load your AWS credentials into the pipeline |
+| 3 | `sh` (shell) | Run: `terraform init` |
+| 4 | `sh` (shell) | Run: `terraform validate` |
+| 5 | `sh` (shell) | Run: `terraform apply -auto-approve` |
+| 6 | `sh` (shell) | Run: `echo "Cluster created successfully"` |
+
+### Step 6 — Save and Build
+- Click **Save**
+- Click **Build Now** 🚀
+
+### 🖼️ Pipeline Flow
+
+```mermaid
+flowchart TD
+    A[Developer pushes to GitHub] -->|Webhook| B[Jenkins Pipeline Triggered]
+    B --> C[Git Checkout]
+    C --> D[Load AWS Credentials]
+    D --> E[terraform init]
+    E --> F[terraform validate]
+    F --> G[terraform apply -auto-approve]
+    G --> H[Echo: Cluster created successfully]
+```
+
+---
+
+## 🎓 How to Host Student ERP on Jenkins
+
+### Step 1 — Create the Jenkins Pipeline Job
+- **New Item → Pipeline**
+- Under **Build Triggers**, enable ✅ **GitHub hook trigger for GITScm polling**
+- Search Google for **"Jenkins Declarative Pipeline"** and paste the base template into the script box
+
+### Step 2 — Build the script using Pipeline Syntax generator
+Click **Pipeline Syntax**, generate each block, and copy the result into your script:
+
+| Order | Select in Pipeline Syntax | Purpose |
+|-------|---------------------------|---------|
+| 1 | `git` | Clone the repository — fill in repo URL + branch |
+| 2 | `sh` (shell) | Move into backend folder and build: `cd backend` then `mvn clean package -Dmaven.test.skip=true` |
+| 3 | `sh` (shell) | Run: `echo "Student ERP deployed successfully"` |
+
+### Step 3 — Save and Build
+- Click **Save**
+- Click **Build Now** 🚀
+
+### 🖼️ Pipeline Flow
+
+```mermaid
+flowchart TD
+    A[Developer pushes to GitHub] -->|Webhook| B[Jenkins Pipeline Triggered]
+    B --> C[Git Checkout]
+    C --> D[cd backend]
+    D --> E[mvn clean package -Dmaven.test.skip=true]
+    E --> F[Echo: Student ERP deployed successfully]
+```
+
+---
+
+## 📌 Notes
+
+- Both pipelines are triggered automatically via a **GitHub webhook** whenever code is pushed
+- The **Pipeline Syntax generator** in Jenkins is used to auto-generate correct script blocks instead of writing them manually — reduces syntax errors
+- `withCredentials` is used specifically when secrets (like AWS keys) are needed inside the pipeline — it keeps them out of plain text
+- **Build Now** can always be used to manually re-trigger a pipeline, in addition to the webhook auto-trigger
