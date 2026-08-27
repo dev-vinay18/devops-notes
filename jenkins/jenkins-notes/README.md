@@ -18,29 +18,54 @@ This process is called **CI/CD**:
 
 ## 🖼️ Jenkins Workflow Diagram
 
+![Jenkins CI/CD Workflow](./jenkins-diagram.svg)
+
+<details>
+<summary>📋 Text version (in case the image doesn't load)</summary>
+
 ```
 👨‍💻 Developer
-     │  (1) git push
+     │
+     │  Push code
      ▼
-📦 Git Repository (GitHub / GitLab / Bitbucket)
-     │  (2) webhook → notifies Jenkins
+📦 Git Repository
+     │
+     │  Notification
      ▼
-⚙️ Jenkins Server
-     │  (3) reads "Jenkinsfile" from repo
+⚙️  Jenkins
+     │
      ▼
-┌────────────┐    ┌────────────┐    ┌────────────┐    ┌────────────┐
-│  Checkout  │───▶│   Build    │───▶│    Test    │───▶│   Deploy   │
-│ Pull code  │    │ Compile /  │    │ Run unit & │    │ Push to    │
-│ from repo  │    │ package it │    │ integration│    │ server /   │
-│            │    │            │    │   tests    │    │ cloud / K8s│
-└────────────┘    └────────────┘    └────────────┘    └────────────┘
-       │                                                     │
-       │ ❌ if any stage fails                                │ ✅ if all pass
-       ▼                                                     ▼
-   🔴 FAILURE                                            🟢 SUCCESS
- Stop pipeline                                        App goes live
- Alert developer                                     Notify the team
+┌──────────────────┐
+│   CI PROCESS     │
+│                  │
+│  Get new code    │
+│       ↓          │
+│  Build           │
+│       ↓          │
+│  Test            │
+│       ↓          │
+│  Check result    │
+└────────┬─────────┘
+         │
+       PASS
+         │
+         ▼
+┌──────────────────┐
+│   CD PROCESS     │
+│                  │
+│  Prepare release │
+│       ↓          │
+│  Deploy          │
+│       ↓          │
+│  Verify          │
+└────────┬─────────┘
+         │
+         ▼
+    ✅ Application
+    available to users
 ```
+
+</details>
 
 ---
 
