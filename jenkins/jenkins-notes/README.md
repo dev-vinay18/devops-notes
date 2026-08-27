@@ -21,7 +21,7 @@ This process is called **CI/CD**:
 ```mermaid
 flowchart TD
     A[👨‍💻 Developer] -->|Push code| B[📦 Git Repository]
-    B -->|Notification| C[⚙️ Jenkins]
+    B -->|Webhook notification| C[⚙️ Jenkins]
     C --> D
 
     subgraph D [CI PROCESS]
@@ -43,45 +43,46 @@ flowchart TD
 <summary>📋 Text version (if the diagram above doesn't render)</summary>
 
 ```
-👨‍💻 Developer
-     │
-     │  Push code
-     ▼
-📦 Git Repository
-     │
-     │  Notification
-     ▼
-⚙️  Jenkins
-     │
-     ▼
-┌──────────────────┐
-│   CI PROCESS     │
-│                  │
-│  Get new code    │
-│       ↓          │
-│  Build           │
-│       ↓          │
-│  Test            │
-│       ↓          │
-│  Check result    │
-└────────┬─────────┘
-         │
-       PASS
-         │
-         ▼
-┌──────────────────┐
-│   CD PROCESS     │
-│                  │
-│  Prepare release │
-│       ↓          │
-│  Deploy          │
-│       ↓          │
-│  Verify          │
-└────────┬─────────┘
-         │
-         ▼
-    ✅ Application
-    available to users
+Developer
+    │
+    │ Push code
+    ▼
+ Git Repository
+    │
+    │ Webhook notification
+    ▼
+  Jenkins
+    │
+    ▼
+ ┌──────────────────┐
+ │   CI PROCESS     │
+ │                  │
+ │ Get new code     │
+ │ ↓                │
+ │ Build            │
+ │ ↓                │
+ │ Test             │
+ │ ↓                │
+ │ Check result     │
+ └────────┬─────────┘
+          │
+        PASS
+          │
+          ▼
+ ┌──────────────────┐
+ │   CD PROCESS     │
+ │                  │
+ │ Prepare release  │
+ │ ↓                │
+ │ Deploy           │
+ │ ↓                │
+ │ Verify           │
+ └────────┬─────────┘
+          │
+          ▼
+     Application
+     available
+     to users
 ```
 
 </details>
