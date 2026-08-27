@@ -18,10 +18,29 @@ This process is called **CI/CD**:
 
 ## 🖼️ Jenkins Workflow Diagram
 
-![Jenkins CI/CD Workflow](./jenkins-diagram.svg)
+```mermaid
+flowchart TD
+    A[👨‍💻 Developer] -->|Push code| B[📦 Git Repository]
+    B -->|Notification| C[⚙️ Jenkins]
+    C --> D
+
+    subgraph D [CI PROCESS]
+        direction TB
+        D1[Get new code] --> D2[Build] --> D3[Test] --> D4[Check result]
+    end
+
+    D -->|PASS| E
+
+    subgraph E [CD PROCESS]
+        direction TB
+        E1[Prepare release] --> E2[Deploy] --> E3[Verify]
+    end
+
+    E --> F[✅ Application available to users]
+```
 
 <details>
-<summary>📋 Text version (in case the image doesn't load)</summary>
+<summary>📋 Text version (if the diagram above doesn't render)</summary>
 
 ```
 👨‍💻 Developer
