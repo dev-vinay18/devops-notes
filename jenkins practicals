@@ -12,7 +12,7 @@ init,validate,approve then copy them in script > then again go to pipeline synta
 
 # how to host student erp on jenkins ?
 steps :
-1) go to jenkins create job > select github hook trigger > then copy script from declarative pipeline search from google > then syntax pipeline select git 
+1) go to jenkins create job > select github hook trigger > then copy script from declarative pipeline search from google > then syntax pipeline select git clone code
 fill needed info then genrate and copy it to syntax > then again syntax pipeline first give commands for directory that we want to use here we use backend go to backend "mvn clean package -Dmaven.test.skip=true" copy this to script > again
 go to syntax pipeline and do echo for output after deployment 
 2) then save it and build it .
