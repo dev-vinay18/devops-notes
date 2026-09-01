@@ -240,70 +240,51 @@ flowchart TD
 - `withCredentials` is used specifically when secrets (like AWS keys) are needed inside the pipeline — it keeps them out of plain text
 - **Build Now** can always be used to manually re-trigger a pipeline, in addition to the webhook auto-trigger
 
-3) 📦 Copy Artifact File to S3 Using Jenkins
+----------------------------------------------------------------------------------------------------------------------------------------------
 
-💡 What is an Artifact?
+#3) 📦 Copy Artifact File to S3 Using Jenkins
 
-An artifact is a snapshot of a running application — a packaged, ready-to-run build. Once created, you don't need to rebuild the app again; the same artifact can be deployed to any other server directly.
+### 💡 What is an Artifact?
 
+An artifact is a **snapshot of a running application** — a packaged, ready-to-run build. Once created, you don't need to rebuild the app again; the same artifact can be deployed to any other server directly.
 
-🧩 Required Plugins
+---
 
+### 🧩 Required Plugins
+- ✅ **S3 Publisher**
+- ✅ **Pipeline: AWS Steps**
+- ✅ **AWS Credentials**
 
-✅ S3 Publisher
-✅ Pipeline: AWS Steps
-✅ AWS Credentials
+---
 
+### 🔧 Setup Steps
 
+**Step 1 — Prepare infrastructure**
+- Create an **S3 bucket**
+- Launch an **EC2 instance** (type: `c7i`)
+- Install on the instance:
+  - ✅ Jenkins
+  - ✅ Maven
+  - ✅ Java (versions **17** and **21**)
 
-🔧 Setup Steps
+**Step 2 — Install & configure Jenkins plugins**
+- Go to **Manage Jenkins → Plugins → Available Plugins**
+- Install:
+  - **S3 Publisher**
+  - **Pipeline: AWS Steps**
+  - **AWS Credentials**
+- Go to **Manage Jenkins → Credentials** → add your AWS Access Key + Secret Key
+- **Restart Jenkins** so the plugins load correctly
 
-Step 1 — Prepare infrastructure
+**Step 3 — Create the pipeline job**
+- New Item → **Pipeline**
+- In the **Pipeline script** box, paste the script below
+- ⚠️ Update:
+  - `bucket` → your actual S3 bucket name
+  - `credentialsId` → the exact name you gave your credentials in Jenkins
 
-
-Create an S3 bucket
-Launch an EC2 instance (type: c7i)
-Install on the instance:
-
-✅ Jenkins
-✅ Maven
-✅ Java (versions 17 and 21)
-
-
-
-
-
-Step 2 — Install & configure Jenkins plugins
-
-
-Go to Manage Jenkins → Plugins → Available Plugins
-Install:
-
-S3 Publisher
-Pipeline: AWS Steps
-AWS Credentials
-
-
-
-Go to Manage Jenkins → Credentials → add your AWS Access Key + Secret Key
-Restart Jenkins so the plugins load correctly
-
-
-Step 3 — Create the pipeline job
-
-
-New Item → Pipeline
-In the Pipeline script box, paste the script below
-⚠️ Update:
-
-bucket → your actual S3 bucket name
-credentialsId → the exact name you gave your credentials in Jenkins
-
-
-
-
-
-groovypipeline {
+```groovy
+pipeline {
     agent any
     stages {
         stage('pull') {
@@ -326,79 +307,36 @@ groovypipeline {
         }
     }
 }
+```
 
-Step 4 — Build
+**Step 4 — Build**
+- Click **Save**
+- Click **Build Now** 🚀
 
+---
 
-Click Save
-Click Build Now 🚀
+### 🖼️ Pipeline Flow
 
+```mermaid
+flowchart TD
+    A[Create S3 bucket + EC2 c7i instance] --> B[Install Jenkins, Maven, Java 17/21]
+    B --> C[Install plugins: S3 Publisher, AWS Steps, AWS Credentials]
+    C --> D[Add AWS credentials + restart Jenkins]
+    D --> E[Create Pipeline job with script]
+    E --> F[Git Checkout - pull stage]
+    F --> G[Build: mvn clean package -DskipTests]
+    G --> H[Artifact created: .jar file]
+    H --> I[Load AWS Credentials]
+    I --> J[s3Upload: push .jar to S3 bucket]
+    J --> K[Artifact stored in S3]
+```
 
+---
 
-🖼️ Pipeline Flow
-
-#mermaid-r7q5-r13 { font-family: "Anthropic Sans", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; fill: rgb(229, 229, 229); }
-#mermaid-r7q5-r13 .edge-animation-slow { stroke-dashoffset: 900; animation: 50s linear 0s infinite normal none running dash; stroke-linecap: round; stroke-dasharray: 9, 5 !important; }
-#mermaid-r7q5-r13 .edge-animation-fast { stroke-dashoffset: 900; animation: 20s linear 0s infinite normal none running dash; stroke-linecap: round; stroke-dasharray: 9, 5 !important; }
-#mermaid-r7q5-r13 .error-icon { fill: rgb(204, 120, 92); }
-#mermaid-r7q5-r13 .error-text { fill: rgb(51, 135, 163); stroke: rgb(51, 135, 163); }
-#mermaid-r7q5-r13 .edge-thickness-normal { stroke-width: 1px; }
-#mermaid-r7q5-r13 .edge-thickness-thick { stroke-width: 3.5px; }
-#mermaid-r7q5-r13 .edge-pattern-solid { stroke-dasharray: 0; }
-#mermaid-r7q5-r13 .edge-thickness-invisible { stroke-width: 0; fill: none; }
-#mermaid-r7q5-r13 .edge-pattern-dashed { stroke-dasharray: 3; }
-#mermaid-r7q5-r13 .edge-pattern-dotted { stroke-dasharray: 2; }
-#mermaid-r7q5-r13 .marker { fill: rgb(161, 161, 161); stroke: rgb(161, 161, 161); }
-#mermaid-r7q5-r13 .marker.cross { stroke: rgb(161, 161, 161); }
-#mermaid-r7q5-r13 svg { font-family: "Anthropic Sans", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; }
-#mermaid-r7q5-r13 p { margin: 0px; }
-#mermaid-r7q5-r13 .label { font-family: "Anthropic Sans", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: rgb(229, 229, 229); }
-#mermaid-r7q5-r13 .cluster-label text { fill: rgb(51, 135, 163); }
-#mermaid-r7q5-r13 .cluster-label span { color: rgb(51, 135, 163); }
-#mermaid-r7q5-r13 .cluster-label span p { background-color: transparent; }
-#mermaid-r7q5-r13 .label text, #mermaid-r7q5-r13 span { fill: rgb(229, 229, 229); color: rgb(229, 229, 229); }
-#mermaid-r7q5-r13 .node rect, #mermaid-r7q5-r13 .node circle, #mermaid-r7q5-r13 .node ellipse, #mermaid-r7q5-r13 .node polygon, #mermaid-r7q5-r13 .node path { fill: transparent; stroke: rgb(161, 161, 161); stroke-width: 1px; }
-#mermaid-r7q5-r13 .rough-node .label text, #mermaid-r7q5-r13 .node .label text, #mermaid-r7q5-r13 .image-shape .label, #mermaid-r7q5-r13 .icon-shape .label { text-anchor: middle; }
-#mermaid-r7q5-r13 .node .katex path { fill: rgb(0, 0, 0); stroke: rgb(0, 0, 0); stroke-width: 1px; }
-#mermaid-r7q5-r13 .rough-node .label, #mermaid-r7q5-r13 .node .label, #mermaid-r7q5-r13 .image-shape .label, #mermaid-r7q5-r13 .icon-shape .label { text-align: center; }
-#mermaid-r7q5-r13 .node.clickable { cursor: pointer; }
-#mermaid-r7q5-r13 .root .anchor path { stroke-width: 0; stroke: rgb(161, 161, 161); fill: rgb(161, 161, 161) !important; }
-#mermaid-r7q5-r13 .arrowheadPath { fill: rgb(11, 11, 11); }
-#mermaid-r7q5-r13 .edgePath .path { stroke: rgb(161, 161, 161); stroke-width: 1px; }
-#mermaid-r7q5-r13 .flowchart-link { stroke: rgb(161, 161, 161); fill: none; }
-#mermaid-r7q5-r13 .edgeLabel { background-color: transparent; text-align: center; }
-#mermaid-r7q5-r13 .edgeLabel p { background-color: transparent; }
-#mermaid-r7q5-r13 .edgeLabel rect { opacity: 0.5; background-color: transparent; fill: transparent; }
-#mermaid-r7q5-r13 .labelBkg { background-color: rgba(0, 0, 0, 0.5); }
-#mermaid-r7q5-r13 .cluster rect { fill: rgb(204, 120, 92); stroke: rgb(138, 115, 107); stroke-width: 1px; }
-#mermaid-r7q5-r13 .cluster text { fill: rgb(51, 135, 163); }
-#mermaid-r7q5-r13 .cluster span { color: rgb(51, 135, 163); }
-#mermaid-r7q5-r13 div.mermaidTooltip { position: absolute; text-align: center; max-width: 200px; padding: 2px; font-family: "Anthropic Sans", system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 12px; background: rgb(204, 120, 92); border: 1px solid rgb(138, 115, 107); border-radius: 2px; pointer-events: none; z-index: 100; }
-#mermaid-r7q5-r13 .flowchartTitleText { text-anchor: middle; font-size: 18px; fill: rgb(229, 229, 229); }
-#mermaid-r7q5-r13 rect.text { fill: none; stroke-width: 0; }
-#mermaid-r7q5-r13 .icon-shape, #mermaid-r7q5-r13 .image-shape { background-color: transparent; text-align: center; }
-#mermaid-r7q5-r13 .icon-shape p, #mermaid-r7q5-r13 .image-shape p { background-color: transparent; padding: 2px; }
-#mermaid-r7q5-r13 .icon-shape .label rect, #mermaid-r7q5-r13 .image-shape .label rect { opacity: 0.5; background-color: transparent; fill: transparent; }
-#mermaid-r7q5-r13 .label-icon { display: inline-block; height: 1em; overflow: visible; vertical-align: -0.125em; }
-#mermaid-r7q5-r13 .node .label-icon path { fill: currentcolor; stroke: revert; stroke-width: revert; }
-#mermaid-r7q5-r13 .node .neo-node { stroke: rgb(161, 161, 161); }
-#mermaid-r7q5-r13 [data-look="neo"].node rect, #mermaid-r7q5-r13 [data-look="neo"].cluster rect, #mermaid-r7q5-r13 [data-look="neo"].node polygon { stroke: url("#mermaid-r7q5-r13-gradient"); filter: drop-shadow(rgb(185, 185, 185) 1px 2px 2px); }
-#mermaid-r7q5-r13 [data-look="neo"].node path { stroke: url("#mermaid-r7q5-r13-gradient"); stroke-width: 1px; }
-#mermaid-r7q5-r13 [data-look="neo"].node .outer-path { filter: drop-shadow(rgb(185, 185, 185) 1px 2px 2px); }
-#mermaid-r7q5-r13 [data-look="neo"].node .neo-line path { stroke: rgb(161, 161, 161); filter: none; }
-#mermaid-r7q5-r13 [data-look="neo"].node circle { stroke: url("#mermaid-r7q5-r13-gradient"); filter: drop-shadow(rgb(185, 185, 185) 1px 2px 2px); }
-#mermaid-r7q5-r13 [data-look="neo"].node circle .state-start { fill: rgb(0, 0, 0); }
-#mermaid-r7q5-r13 [data-look="neo"].icon-shape .icon { fill: url("#mermaid-r7q5-r13-gradient"); filter: drop-shadow(rgb(185, 185, 185) 1px 2px 2px); }
-#mermaid-r7q5-r13 [data-look="neo"].icon-shape .icon-neo path { stroke: url("#mermaid-r7q5-r13-gradient"); filter: drop-shadow(rgb(185, 185, 185) 1px 2px 2px); }
-#mermaid-r7q5-r13 :root { --mermaid-font-family: "Anthropic Sans",system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }Create S3 bucket + EC2 c7iinstanceInstall Jenkins, Maven, Java17/21Install plugins: S3Publisher, AWS Steps, AWSCredentialsAdd AWS credentials +restart JenkinsCreate Pipeline job withscriptGit Checkout - pull stageBuild: mvn clean package-DskipTestsArtifact created: .jar fileLoad AWS Credentialss3Upload: push .jar to S3bucketArtifact stored in S3
-
-
-📌 Quick Notes
-
-
-acl controls who can access the file in S3 (Private / PublicRead, etc.)
-bucket is the target S3 bucket name — must already exist
-file is the local path (in the Jenkins workspace) to the artifact being uploaded
-path is the destination folder/prefix inside the S3 bucket — leave '' to upload to the bucket root
-withCredentials keeps AWS keys secure and out of plain text in the script
-Restarting Jenkins after installing plugins ensures they're properly loaded before use
+### 📌 Quick Notes
+- `acl` controls who can access the file in S3 (`Private` / `PublicRead`, etc.)
+- `bucket` is the target S3 bucket name — must already exist
+- `file` is the local path (in the Jenkins workspace) to the artifact being uploaded
+- `path` is the destination folder/prefix inside the S3 bucket — leave `''` to upload to the bucket root
+- `withCredentials` keeps AWS keys secure and out of plain text in the script
+- Restarting Jenkins after installing plugins ensures they're properly loaded before use
