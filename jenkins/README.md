@@ -248,7 +248,7 @@ flowchart TD
 
 An artifact is a **snapshot of a build code** — a packaged, ready-to-run build. Once created, you don't need to rebuild the app again; the same artifact can be deployed to any other server directly.
 
-          **or**
+**or**
 
 An artifact is a packaged, ready-to-run build of your application. Once created, you don't need to rebuild the app again — the same artifact can be deployed to any other server directly.
 
