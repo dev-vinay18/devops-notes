@@ -242,7 +242,7 @@ flowchart TD
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
-#3) 📦 Copy Artifact File to S3 Using Jenkins
+# 3) 📦 Copy Artifact File to S3 Using Jenkins
 
 ### 💡 What is an Artifact?
 
