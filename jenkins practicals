@@ -16,3 +16,37 @@ steps :
 fill needed info then genrate and copy it to syntax > then again syntax pipeline first give commands for directory that we want to use here we use backend go to backend "mvn clean package -Dmaven.test.skip=true" copy this to script > again
 go to syntax pipeline and do echo for output after deployment 
 2) then save it and build it .
+
+# how to copy artifact file from created application to s3 ?
+what is artifact : it is snapshot of running application so that we dont want to rebuild it again and we can deploy it other server without rebuilding.
+steps :
+1) create s3 bucket and instance of c7i then and download jenkins ,maven,javaversion 17 and 21
+2) install plugins s3 publisher,pipeline: aws steps and aws credintials then set credintials after that re-start jenkins
+3) go to job create pipeline in script write down this : and change bucket name and give crediantials name as u given in jenkins credidentials 
+pipeline {
+    agent any
+
+    stages {
+        stage('pull') {
+            steps {
+               git branch: 'main', url: 'https://github.com/Rohit-1920/EasyCRUD-Updated.git'
+            }
+        }
+        stage('build') {
+            steps {
+               sh '''cd backend
+                mvn clean package -DskipTests'''
+            }
+        }
+        stage('s3Upload') {
+            steps {
+               withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-cred', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                   // Fixed trailing comma, removed double .jar typo, and updated path to point inside backend directory
+                   s3Upload acl: 'Private', bucket: 'jenkins-artifact-manager123', file: 'backend/target/student-registration-backend-0.0.1-SNAPSHOT.jar', path: ''
+               }
+            }
+        }
+    }
+}
+
+4) finally build it.
