@@ -1,4 +1,4 @@
-# Jenkins + SonarQube Setup and Pipeline
+# 1) Jenkins + SonarQube Setup and Pipeline
 
 This guide explains how to integrate **Jenkins** with **SonarQube** for code analysis using EC2 instances.
 
@@ -131,7 +131,7 @@ pipeline {
 
 
 --------------------------------------------------------------------------------------------------------------------------------------
-# ⚙️ Jenkins Pipeline Projects
+# 2) ⚙️ Jenkins Pipeline Projects
 
 Two Jenkins pipeline setups documented step-by-step:
 1. 🏗️ Create a cluster using **Terraform**
